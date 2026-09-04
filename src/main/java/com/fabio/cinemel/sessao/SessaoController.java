@@ -3,6 +3,11 @@ package com.fabio.cinemel.sessao;
 import java.net.URI;
 import java.util.List;
 
+import com.fabio.cinemel.catalogo.Filme;
+import com.fabio.cinemel.catalogo.FilmeRepository;
+import com.fabio.cinemel.sala.Sala;
+import com.fabio.cinemel.sala.SalaRepository;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +27,29 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class SessaoController {
 
 	private final SessaoRepository sessaoRepository;
+	private final FilmeRepository filmeRepository;
+	private final SalaRepository salaRepository;
 
-	public SessaoController(SessaoRepository sessaoRepository) {
+	public SessaoController(SessaoRepository sessaoRepository, FilmeRepository filmeRepository,
+			SalaRepository salaRepository) {
 		this.sessaoRepository = sessaoRepository;
+		this.filmeRepository = filmeRepository;
+		this.salaRepository = salaRepository;
 	}
 
 	// Cria uma nova sessão e retorna a localização do recurso criado.
 	@PostMapping
-	public ResponseEntity<Sessao> criar(@RequestBody Sessao sessao) {
+	public ResponseEntity<Sessao> criar(@RequestBody SessaoRequest request) {
+		return filmeRepository.findById(request.filmeId())
+				.flatMap(filme -> salaRepository.findById(request.salaId())
+						.map(sala -> salvarNovaSessao(request, filme, sala)))
+				.orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
+	private ResponseEntity<Sessao> salvarNovaSessao(SessaoRequest request,
+			Filme filme, Sala sala) {
+		Sessao sessao = new Sessao(null, filme, sala, request.dataHora(), request.formato(),
+				request.audio(), request.precoBase());
 		Sessao sessaoSalva = sessaoRepository.save(sessao);
 		URI localizacao = ServletUriComponentsBuilder
 				.fromCurrentRequest()
@@ -56,17 +76,24 @@ public class SessaoController {
 
 	// Atualiza os dados de uma sessão existente.
 	@PutMapping("/{id}")
-	public ResponseEntity<Sessao> atualizar(@PathVariable Long id, @RequestBody Sessao sessaoAtualizada) {
+	public ResponseEntity<Sessao> atualizar(@PathVariable Long id, @RequestBody SessaoRequest request) {
 		return sessaoRepository.findById(id)
-				.map(sessao -> {
-					sessao.setFilme(sessaoAtualizada.getFilme());
-					sessao.setSala(sessaoAtualizada.getSala());
-					sessao.setDataHora(sessaoAtualizada.getDataHora());
-					sessao.setFormato(sessaoAtualizada.getFormato());
-					sessao.setAudio(sessaoAtualizada.getAudio());
-					sessao.setPrecoBase(sessaoAtualizada.getPrecoBase());
-					return ResponseEntity.ok(sessaoRepository.save(sessao));
-				})
+				.map(sessao -> atualizarSessao(sessao, request))
+				.orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
+	private ResponseEntity<Sessao> atualizarSessao(Sessao sessao, SessaoRequest request) {
+		return filmeRepository.findById(request.filmeId())
+				.flatMap(filme -> salaRepository.findById(request.salaId())
+						.map(sala -> {
+							sessao.setFilme(filme);
+							sessao.setSala(sala);
+							sessao.setDataHora(request.dataHora());
+							sessao.setFormato(request.formato());
+							sessao.setAudio(request.audio());
+							sessao.setPrecoBase(request.precoBase());
+							return ResponseEntity.ok(sessaoRepository.save(sessao));
+						}))
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 

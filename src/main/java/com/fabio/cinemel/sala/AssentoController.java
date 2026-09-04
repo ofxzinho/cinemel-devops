@@ -22,14 +22,23 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class AssentoController {
 
 	private final AssentoRepository assentoRepository;
+	private final SalaRepository salaRepository;
 
-	public AssentoController(AssentoRepository assentoRepository) {
+	public AssentoController(AssentoRepository assentoRepository, SalaRepository salaRepository) {
 		this.assentoRepository = assentoRepository;
+		this.salaRepository = salaRepository;
 	}
 
 	// Cria um novo assento e retorna a localização do recurso criado.
 	@PostMapping
-	public ResponseEntity<Assento> criar(@RequestBody Assento assento) {
+	public ResponseEntity<Assento> criar(@RequestBody AssentoRequest request) {
+		return salaRepository.findById(request.salaId())
+				.map(sala -> salvarNovoAssento(request, sala))
+				.orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
+	private ResponseEntity<Assento> salvarNovoAssento(AssentoRequest request, Sala sala) {
+		Assento assento = new Assento(null, sala, request.fileira(), request.numero(), request.tipo());
 		Assento assentoSalvo = assentoRepository.save(assento);
 		URI localizacao = ServletUriComponentsBuilder
 				.fromCurrentRequest()
@@ -56,13 +65,19 @@ public class AssentoController {
 
 	// Atualiza os dados de um assento existente.
 	@PutMapping("/{id}")
-	public ResponseEntity<Assento> atualizar(@PathVariable Long id, @RequestBody Assento assentoAtualizado) {
+	public ResponseEntity<Assento> atualizar(@PathVariable Long id, @RequestBody AssentoRequest request) {
 		return assentoRepository.findById(id)
-				.map(assento -> {
-					assento.setSala(assentoAtualizado.getSala());
-					assento.setFileira(assentoAtualizado.getFileira());
-					assento.setNumero(assentoAtualizado.getNumero());
-					assento.setTipo(assentoAtualizado.getTipo());
+				.map(assento -> atualizarAssento(assento, request))
+				.orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
+	private ResponseEntity<Assento> atualizarAssento(Assento assento, AssentoRequest request) {
+		return salaRepository.findById(request.salaId())
+				.map(sala -> {
+					assento.setSala(sala);
+					assento.setFileira(request.fileira());
+					assento.setNumero(request.numero());
+					assento.setTipo(request.tipo());
 					return ResponseEntity.ok(assentoRepository.save(assento));
 				})
 				.orElseGet(() -> ResponseEntity.notFound().build());
