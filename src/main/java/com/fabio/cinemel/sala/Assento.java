@@ -17,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,16 +31,20 @@ public class Assento {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private Long id;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "sala_id")
+	@Schema(description = "Informe apenas o id de uma sala existente.")
 	private Sala sala;
 
 	@Column(nullable = false, length = 2)
+	@Schema(example = "A")
 	private String fileira;
 
 	@Column(nullable = false)
+	@Schema(example = "1")
 	private Integer numero;
 
 	@Enumerated(EnumType.STRING)
