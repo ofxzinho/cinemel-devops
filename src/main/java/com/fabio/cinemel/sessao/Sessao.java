@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,17 +34,21 @@ public class Sessao {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private Long id;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "filme_id")
+	@Schema(description = "Informe apenas o id de um filme existente.")
 	private Filme filme;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "sala_id")
+	@Schema(description = "Informe apenas o id de uma sala existente.")
 	private Sala sala;
 
 	@Column(nullable = false)
+	@Schema(example = "2026-09-10T20:30:00")
 	private LocalDateTime dataHora;
 
 	@Enumerated(EnumType.STRING)
@@ -54,5 +60,6 @@ public class Sessao {
 	private Audio audio;
 
 	@Column(nullable = false, precision = 10, scale = 2)
+	@Schema(example = "32.00")
 	private BigDecimal precoBase;
 }
