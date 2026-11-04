@@ -21,7 +21,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17' # Altere para a versão do seu projeto se não for o Java 17
