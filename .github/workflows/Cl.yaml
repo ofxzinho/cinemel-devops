@@ -21,14 +21,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17' # Altere para a versão do seu projeto se não for o Java 17
           cache: 'maven'
 
+      - name: Garantir permissão do Maven Wrapper
+        run: chmod +x ./mvnw
+
       - name: Testes (obrigatórios antes do build)
-        run: 
-          ./mvnw test
+        run: ./mvnw test
 
       - name: Build da imagem
         run: docker build --tag "cinemel:${GITHUB_SHA}" .
