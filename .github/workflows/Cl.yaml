@@ -21,7 +21,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-           - name: Configurar Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -29,9 +28,8 @@ jobs:
           cache: 'maven'
 
       - name: Testes (obrigatórios antes do build)
-        run: |
-          chmod +x mvnw
-          ./mvnw clean test
+        run: 
+          ./mvnw run test
 
       - name: Build da imagem
         run: docker build --tag "cinemel:${GITHUB_SHA}" .
