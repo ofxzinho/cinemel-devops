@@ -28,7 +28,7 @@ jobs:
 
       - name: Testes (obrigatórios antes do build)
         run: 
-          ./mvnw run test
+          ./mvnw test
 
       - name: Build da imagem
         run: docker build --tag "cinemel:${GITHUB_SHA}" .
