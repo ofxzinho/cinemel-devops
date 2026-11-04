@@ -1,10 +1,4 @@
-package com.fabio.cinemel.sessao;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
-import com.fabio.cinemel.catalogo.Filme;
-import com.fabio.cinemel.sala.Sala;
+package com.cinemel.sala;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,8 +24,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sessao")
-public class Sessao {
+@Table(name = "assento", uniqueConstraints = @UniqueConstraint(
+		name = "uk_assento_sala_fileira_numero",
+		columnNames = {"sala_id", "fileira", "numero"}))
+public class Assento {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,28 +35,19 @@ public class Sessao {
 	private Long id;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "filme_id")
-	@Schema(description = "Informe apenas o id de um filme existente.")
-	private Filme filme;
-
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "sala_id")
 	@Schema(description = "Informe apenas o id de uma sala existente.")
 	private Sala sala;
 
+	@Column(nullable = false, length = 2)
+	@Schema(example = "A")
+	private String fileira;
+
 	@Column(nullable = false)
-	@Schema(example = "2026-09-10T20:30:00")
-	private LocalDateTime dataHora;
+	@Schema(example = "1")
+	private Integer numero;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, length = 10)
-	private Formato formato;
-
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, length = 10)
-	private Audio audio;
-
-	@Column(nullable = false, precision = 10, scale = 2)
-	@Schema(example = "32.00")
-	private BigDecimal precoBase;
+	@Column(nullable = false, length = 20)
+	private TipoAssento tipo;
 }

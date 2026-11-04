@@ -1,4 +1,4 @@
-package com.fabio.cinemel.catalogo;
+package com.cinemel.catalogo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

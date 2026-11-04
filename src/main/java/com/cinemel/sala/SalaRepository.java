@@ -1,4 +1,4 @@
-package com.fabio.cinemel.sala;
+package com.cinemel.sala;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,4 +1,4 @@
-package com.fabio.cinemel.catalogo;
+package com.cinemel.catalogo;
 
 public enum StatusFilme {
 	EM_CARTAZ,

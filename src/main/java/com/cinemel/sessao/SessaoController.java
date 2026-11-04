@@ -1,12 +1,12 @@
-package com.fabio.cinemel.sessao;
+package com.cinemel.sessao;
 
 import java.net.URI;
 import java.util.List;
 
-import com.fabio.cinemel.catalogo.Filme;
-import com.fabio.cinemel.catalogo.FilmeRepository;
-import com.fabio.cinemel.sala.Sala;
-import com.fabio.cinemel.sala.SalaRepository;
+import com.cinemel.catalogo.Filme;
+import com.cinemel.catalogo.FilmeRepository;
+import com.cinemel.sala.Sala;
+import com.cinemel.sala.SalaRepository;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

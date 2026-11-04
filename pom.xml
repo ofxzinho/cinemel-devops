@@ -8,7 +8,7 @@
 		<version>4.0.8</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.fabio</groupId>
+	<groupId>com.cinemel</groupId>
 	<artifactId>cinemel</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
@@ -48,6 +48,11 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>

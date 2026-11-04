@@ -1,4 +1,4 @@
-package com.fabio.cinemel.sessao;
+package com.cinemel.sessao;
 
 public enum Formato {
 	DOIS_D,

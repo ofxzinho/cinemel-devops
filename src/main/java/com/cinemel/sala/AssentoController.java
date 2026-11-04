@@ -1,4 +1,4 @@
-package com.fabio.cinemel.sala;
+package com.cinemel.sala;
 
 import java.net.URI;
 import java.util.List;

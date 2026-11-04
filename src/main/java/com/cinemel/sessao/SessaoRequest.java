@@ -1,4 +1,4 @@
-package com.fabio.cinemel.sessao;
+package com.cinemel.sessao;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

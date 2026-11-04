@@ -1,4 +1,4 @@
-package com.fabio.cinemel.catalogo;
+package com.cinemel.catalogo;
 
 import java.net.URI;
 import java.util.List;
