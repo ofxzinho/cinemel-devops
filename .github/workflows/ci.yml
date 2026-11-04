@@ -3,9 +3,11 @@ name: Cinemel
 on:
   push:
     branches:
+      - main
       - develop
   pull_request:
     branches:
+      - main
       - develop
   workflow_dispatch:
 
@@ -42,7 +44,7 @@ jobs:
         run: docker build --file dockerfile --tag "cinemel:${GITHUB_SHA}" .
 
       - name: Enviar imagem ao Docker Hub
-        if: ${{ env.PUSH_ENABLED == 'true' && github.event_name != 'pull_request' && github.ref == 'refs/heads/develop' }}
+        if: ${{ env.PUSH_ENABLED == 'true' && github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
         run: |
           set -euo pipefail
           : "${DOCKERHUB_USERNAME:?Configure o secret DOCKERHUB_USERNAME}"
