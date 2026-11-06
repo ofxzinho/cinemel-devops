@@ -1,6 +1,7 @@
 package com.cinemel.catalogo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,8 @@ class FilmeControllerUnitTest {
         // Act (executar)
         ResponseEntity<Filme> resposta = filmeController.buscarPorId(99L);
 
+        System.out.println("buscarPorId(99) devolveu: " + resposta.getStatusCode());
+
         // Assert (verificar)
         assertThat(resposta.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -40,6 +43,10 @@ class FilmeControllerUnitTest {
         when(filmeRepository.existsById(1L)).thenReturn(true);
 
         ResponseEntity<Void> resposta = filmeController.excluir(1L);
+
+        System.out.println("excluir(1) devolveu: " + resposta.getStatusCode());
+        System.out.println("Chamadas no repository falso: "
+                + mockingDetails(filmeRepository).getInvocations());
 
         assertThat(resposta.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(filmeRepository).deleteById(1L);

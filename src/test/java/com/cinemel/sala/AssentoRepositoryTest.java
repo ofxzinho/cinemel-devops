@@ -2,6 +2,7 @@ package com.cinemel.sala;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,11 @@ class AssentoRepositoryTest {
         // Act
         List<Assento> resultado =
                 assentoRepository.findBySalaIdOrderByFileiraAscNumeroAsc(sala1.getId());
+
+     System.out.println("Salvos (fora de ordem): B2, A2, A1 na sala 1 e A1 na sala 2");
+        System.out.println("Assentos da sala 1: " + resultado.stream()
+                .map(a -> a.getFileira() + a.getNumero())
+                .toList());
 
         // Assert
         assertThat(resultado)
