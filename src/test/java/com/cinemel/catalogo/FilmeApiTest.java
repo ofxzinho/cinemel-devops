@@ -47,6 +47,6 @@ class FilmeApiTest {
     @Test
     void getFilmePorId_quandoNaoExiste_deveRetornar404() throws Exception {
         mockMvc.perform(get("/filmes/{id}", 999999))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
     }
 }
