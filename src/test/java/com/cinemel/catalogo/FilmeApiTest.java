@@ -37,8 +37,10 @@ class FilmeApiTest {
                 """;
 
         mockMvc.perform(post("/filmes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+        .andDo(print())
+        .andExpect(status().isCreated())
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", containsString("/filmes/")))
                 .andExpect(jsonPath("$.id").isNumber())
