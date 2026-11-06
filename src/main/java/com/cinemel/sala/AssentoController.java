@@ -3,6 +3,8 @@ package com.cinemel.sala;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,14 +41,19 @@ public class AssentoController {
 
 	private ResponseEntity<Assento> salvarNovoAssento(AssentoRequest request, Sala sala) {
 		Assento assento = new Assento(null, sala, request.fileira(), request.numero(), request.tipo());
-		Assento assentoSalvo = assentoRepository.save(assento);
-		URI localizacao = ServletUriComponentsBuilder
-				.fromCurrentRequest()
-				.path("/{id}")
-				.buildAndExpand(assentoSalvo.getId())
-				.toUri();
+		try {
+			Assento assentoSalvo = assentoRepository.save(assento);
+			URI localizacao = ServletUriComponentsBuilder
+					.fromCurrentRequest()
+					.path("/{id}")
+					.buildAndExpand(assentoSalvo.getId())
+					.toUri();
 
-		return ResponseEntity.created(localizacao).body(assentoSalvo);
+			return ResponseEntity.created(localizacao).body(assentoSalvo);
+		} catch (DataIntegrityViolationException ex) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body(null);
+		}
 	}
 
 	// Lista todos os assentos cadastrados.
