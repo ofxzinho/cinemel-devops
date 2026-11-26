@@ -21,6 +21,12 @@ const movieDetails = new Map([
         tagline: "Alguns heróis usam capas. Outros têm orelhas.",
         rating: "⭐ 9,8/10",
         posterLine: "O silêncio nunca foi uma opção."
+    }],
+    ["Orelha 2: O Cão Biônico", {
+        year: "2026",
+        genre: "Ação, ficção científica e suspense",
+        tagline: "Antes, ele era o melhor amigo do homem. Agora, é o pior inimigo da humanidade.",
+        rating: "IMDb: ⭐ 9,7/10 (fictício)"
     }]
 ]);
 const storageKey = "cinemel-reservas";
