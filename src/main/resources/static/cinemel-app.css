@@ -1,0 +1,115 @@
+:root {
+    color-scheme: light;
+    --ink: #241b38;
+    --muted: #625a6f;
+    --paper: #f7f4f1;
+    --line: #dfd8e1;
+    --accent: #5738a1;
+    --soft-accent: #eee7fc;
+    font: 16px/1.5 system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; padding-bottom: 84px; }
+[hidden] { display: none !important; }
+.frame { width: min(100% - 32px, 960px); margin-inline: auto; }
+
+.masthead { background: var(--ink); color: #eee7fc; border-bottom: 4px solid #b9a0f5; }
+.masthead-inner { display: flex; align-items: center; gap: 16px; min-height: 64px; }
+.wordmark { color: white; font: 600 1.8rem Georgia, serif; letter-spacing: -.06em; text-decoration: none; }
+.masthead span { font-size: .85rem; border-left: 1px solid #8d80a7; padding-left: 16px; }
+
+.section-header { display: grid; gap: 18px; padding-block: 30px 24px; }
+h1, h2, p { margin: 0; }
+h1 { font: 500 clamp(2.6rem, 7vw, 4.5rem)/1.05 Georgia, serif; letter-spacing: -.045em; }
+.section-header p { margin-top: .5rem; color: var(--muted); }
+h2 { font-size: 1.08rem; }
+
+button, .navigation a, input, select, textarea { min-height: 44px; }
+button, input, select, textarea { font: inherit; }
+button {
+    padding: .55rem .95rem;
+    border-radius: 9px;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    background: white;
+    cursor: pointer;
+    font-weight: 650;
+}
+button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+button.danger { background: #a52542; border-color: #a52542; color: white; }
+button.delete { color: #941c38; }
+button:disabled { opacity: .6; cursor: wait; }
+:focus-visible { outline: 3px solid #8662da; outline-offset: 3px; }
+
+.notice, .error { padding: .75rem 1rem; border-radius: 8px; }
+.notice { margin-bottom: 1rem; background: #dcefe6; color: #174d38; }
+.error, .notice[data-error] { color: #7d1835; background: #fbe3ec; }
+
+.records { background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.list-header { display: flex; justify-content: space-between; gap: 12px; padding: 14px 16px; background: #f0ebf8; }
+#count, .list-status, .record-details { color: var(--muted); font-size: .9rem; }
+.list-status:not(:empty) { padding: 16px; }
+#retry { margin: 0 16px 16px; }
+#entries { margin: 0; padding: 0; list-style: none; }
+.record { padding: 14px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.record + .record { border-top: 1px solid var(--line); }
+.record-info { flex: 1 1 160px; overflow-wrap: anywhere; }
+.record-title { font-weight: 740; }
+.record-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.navigation {
+    position: fixed;
+    z-index: 1;
+    inset: auto 0 0;
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+    background: #fff;
+    border-top: 1px solid var(--line);
+}
+.navigation-inner { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; }
+.navigation a {
+    display: grid;
+    place-items: center;
+    padding: 4px;
+    color: var(--muted);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: .875rem;
+    font-weight: 700;
+}
+.navigation a[aria-current] { color: #40257f; background: var(--soft-accent); }
+
+dialog {
+    width: min(100% - 24px, 550px);
+    max-height: 88dvh;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    color: var(--ink);
+}
+dialog::backdrop { background: #1b102c9e; }
+.dialog-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
+.dialog-header h2 { font-size: 1.2rem; }
+#close-editor { font-size: 1.25rem; line-height: 1; }
+#fields { display: grid; gap: 12px; }
+.field { display: grid; gap: 4px; font-weight: 650; }
+.field small { color: var(--muted); font-weight: 400; }
+.field input, .field select, .field textarea {
+    width: 100%;
+    border: 1px solid #a69ab4;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: white;
+    color: var(--ink);
+}
+.field textarea { resize: vertical; }
+dialog .error { margin-top: 12px; }
+.actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+
+@media (min-width: 650px) {
+    .section-header { grid-template-columns: 1fr auto; align-items: end; padding-block: 48px 30px; }
+    .navigation-inner { max-width: 550px; }
+    dialog { padding: 24px; }
+}
