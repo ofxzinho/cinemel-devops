@@ -9,6 +9,20 @@ const review = byId("review");
 const confirm = byId("confirm");
 const cancel = byId("cancel");
 const featuredTitle = "Os Seis Sem Futuro";
+const movieDetails = new Map([
+    [featuredTitle, {
+        year: "2026",
+        genre: "Comédia, tragédia e desemprego",
+        rating: "IMDb: 6,7/10 — Avaliado pelos próprios protagonistas."
+    }],
+    ["Orelha: O Último Latido", {
+        year: "2026",
+        genre: "Ação, drama e suspense",
+        tagline: "Alguns heróis usam capas. Outros têm orelhas.",
+        rating: "⭐ 9,8/10",
+        posterLine: "O silêncio nunca foi uma opção."
+    }]
+]);
 const storageKey = "cinemel-reservas";
 const profileKey = "cinemel-perfil";
 const defaultProfile = { nome: "Josel", sobrenome: "Gabel", cinema: "CineMel", novidades: "nao" };
@@ -142,26 +156,35 @@ function posterFor(movie) {
     return movie.titulo === featuredTitle ? "/os-seis-sem-futuro.png" : allowedPoster(movie.posterUrl);
 }
 
+function formatDuration(minutes) {
+    if (!minutes) return "";
+    const hours = Math.floor(minutes / 60);
+    const remainder = minutes % 60;
+    return [hours && hours + "h", remainder && remainder + "min"].filter(Boolean).join(" ");
+}
+
 function renderFilm(id) {
     const movie = movies.find(item => item.id === id);
     const image = byId("film-image");
     const title = byId("film-title");
     const poster = movie && posterFor(movie);
-    image.hidden = !poster;
+    byId("film-poster").hidden = !poster;
     if (poster) image.src = poster;
     title.textContent = movie?.titulo || (catalogueLoaded ? "Filme indisponível" : "Carregando filme…");
-    const featured = movie?.titulo === featuredTitle;
+    const details = movieDetails.get(movie?.titulo);
+    const posterLine = byId("film-poster-line");
+    posterLine.textContent = details?.posterLine || "";
+    posterLine.hidden = !details?.posterLine;
     byId("film-meta").textContent = movie ? [
         movie.status === "EM_BREVE" ? "Em breve" : "Em cartaz",
-        featured ? "2026" : null,
-        movie.duracaoMinutos ? movie.duracaoMinutos + " min" : null,
+        details?.year,
+        details?.genre,
+        formatDuration(movie.duracaoMinutos),
         movie.classificacao ? "Classificação " + movie.classificacao : null
     ].filter(Boolean).join(" · ") : "";
-    byId("film-description").textContent = featured
-        ? "O futuro era promissor. Até eles se conhecerem. Gênero: comédia, tragédia e desemprego."
-        : movie?.sinopse || "";
-    byId("film-rating").textContent = featured
-        ? "IMDb: 6,7/10 — Avaliado pelos próprios protagonistas." : "";
+    byId("film-tagline").textContent = details?.tagline || "";
+    byId("film-description").textContent = movie?.sinopse || "";
+    byId("film-rating").textContent = details?.rating || "";
     const showtimes = sessions.filter(item => item.filme?.id === id);
     const days = [...new Set(showtimes.map(session => session.dataHora.slice(0, 10)))];
     const filters = byId("film-days");

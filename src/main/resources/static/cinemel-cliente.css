@@ -64,6 +64,8 @@ select + label { margin-top: 18px; }
 .selected-session, .profile-context { color: var(--soft); font-size: .9rem; margin-top: .65rem; }
 .film-detail { border: 1px solid var(--line); background: var(--panel); border-radius: 14px; overflow: hidden; }
 .film-detail img { width: 100%; height: clamp(270px, 92vw, 420px); object-fit: cover; object-position: center 37%; display: block; }
+.film-poster { position: relative; margin: 0; }
+.film-poster figcaption { position: absolute; inset: auto 0 0; padding: 28px 16px 14px; background: linear-gradient(transparent, #080809f2); color: #fff; font-weight: 750; text-align: center; }
 .film-copy { padding: clamp(16px, 4vw, 32px); }
 .film-copy h1 { font-size: clamp(1.9rem, 6vw, 3.8rem); line-height: 1.05; letter-spacing: -.05em; }
 .film-copy p:not(:empty) { margin-top: .65rem; }
@@ -136,7 +138,7 @@ dialog p { margin-top: .65rem; }
     .feature::before { background: linear-gradient(90deg, #080809 28%, #080809cc 41%, transparent 78%); }
     .feature-copy { padding: 38px; }
     .film-detail { display: grid; grid-template-columns: 1fr 1.35fr; align-items: center; }
-    .film-detail:has(img[hidden]) { display: block; }
+    .film-detail:has(.film-poster[hidden]) { display: block; }
     .booking-grid { grid-template-columns: minmax(220px, 1fr) 1.5fr; align-items: start; }
     .profile-layout { grid-template-columns: minmax(220px, .8fr) 1.65fr; }
 }
