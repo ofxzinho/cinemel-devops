@@ -5,10 +5,12 @@ import java.util.List;
 
 import com.cinemel.catalogo.Filme;
 import com.cinemel.catalogo.FilmeRepository;
+import com.cinemel.reserva.ReservaRepository;
 import com.cinemel.sala.Sala;
 import com.cinemel.sala.SalaRepository;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,12 +32,14 @@ public class SessaoController {
 	private final SessaoRepository sessaoRepository;
 	private final FilmeRepository filmeRepository;
 	private final SalaRepository salaRepository;
+	private final ReservaRepository reservaRepository;
 
 	public SessaoController(SessaoRepository sessaoRepository, FilmeRepository filmeRepository,
-			SalaRepository salaRepository) {
+			SalaRepository salaRepository, ReservaRepository reservaRepository) {
 		this.sessaoRepository = sessaoRepository;
 		this.filmeRepository = filmeRepository;
 		this.salaRepository = salaRepository;
+		this.reservaRepository = reservaRepository;
 	}
 
 	// Cria uma nova sessão e retorna a localização do recurso criado.
@@ -81,13 +85,17 @@ public class SessaoController {
 	// Atualiza os dados de uma sessão existente.
 	@Operation(summary = "Atualizar sessão")
 	@PutMapping("/{id}")
+	@Transactional
 	public ResponseEntity<Sessao> atualizar(@PathVariable Long id, @RequestBody SessaoRequest request) {
-		return sessaoRepository.findById(id)
+		return sessaoRepository.buscarParaAlteracao(id)
 				.map(sessao -> atualizarSessao(sessao, request))
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	private ResponseEntity<Sessao> atualizarSessao(Sessao sessao, SessaoRequest request) {
+		if (reservaRepository.existsBySessaoId(sessao.getId())) {
+			return ResponseEntity.status(409).build();
+		}
 		return filmeRepository.findById(request.filmeId())
 				.flatMap(filme -> salaRepository.findById(request.salaId())
 						.map(sala -> {
@@ -105,9 +113,13 @@ public class SessaoController {
 	// Remove uma sessão existente.
 	@Operation(summary = "Excluir sessão")
 	@DeleteMapping("/{id}")
+	@Transactional
 	public ResponseEntity<Void> excluir(@PathVariable Long id) {
-		if (!sessaoRepository.existsById(id)) {
+		if (sessaoRepository.buscarParaAlteracao(id).isEmpty()) {
 			return ResponseEntity.notFound().build();
+		}
+		if (reservaRepository.existsBySessaoId(id)) {
+			return ResponseEntity.status(409).build();
 		}
 
 		sessaoRepository.deleteById(id);

@@ -12,6 +12,7 @@
 | API de sessões | Enviar `POST /sessoes` com filme e sala cadastrados, formato `DOIS_D`, áudio `LEGENDADO` e preço 32,00 | HTTP 201, `Location`, ID e dados da sessão. A sessão é persistida com os vínculos e o preço esperados |
 | API de sessões | Enviar `POST /sessoes` com filme inexistente e sala cadastrada | HTTP 404, ausência de `Location` e quantidade de sessões preservada |
 | API de sessões | Enviar `POST /sessoes` com filme cadastrado e sala inexistente | HTTP 404, ausência de `Location` e quantidade de sessões preservada |
+| API de reservas | Reservar um lugar, repetir a reserva na mesma sessão e tentar reservar assento de outra sala | A primeira reserva retorna HTTP 201 com código. A duplicata retorna HTTP 409. Um assento de outra sala retorna HTTP 404. O mesmo lugar pode ser reservado em outra sessão, e a gestão preserva os vínculos das reservas |
 
 Os testes de API acionam as rotas com MockMvc. Os testes com persistência usam H2 em memória. Os cenários de sessão são executados em transações revertidas após cada teste.
 
@@ -22,6 +23,6 @@ Os testes de API acionam as rotas com MockMvc. Os testes com persistência usam 
 | Suíte completa | `.\mvnw.cmd clean test` | `./mvnw clean test` |
 | Apenas sessões | `.\mvnw.cmd '-Dtest=SessaoApiTest' test` | `./mvnw -Dtest=SessaoApiTest test` |
 
-A suíte contém **10 testes**. O resumo da execução aparece no console, e o Maven Surefire grava os relatórios em `target/surefire-reports/`.
+A suíte contém **11 testes**. O resumo da execução aparece no console, e o Maven Surefire grava os relatórios em `target/surefire-reports/`.
 
 Os testes protegem o contrato HTTP, verificam que as sessões respeitam os vínculos com filme e sala e evitam que uma alteração na consulta de assentos misture salas ou mude a ordem esperada.

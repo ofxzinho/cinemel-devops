@@ -2,7 +2,7 @@
 
 API REST para gerenciar o catálogo de filmes e a programação de um cinema. É uma aplicação Java com Spring Boot, Spring MVC, Spring Data JPA, PostgreSQL e Swagger.
 
-A [interface web do CineMel](https://cinemel-devops.onrender.com/) permite consultar, cadastrar, editar e excluir registros no celular ou no computador. A barra inferior dá acesso às quatro áreas. As operações de gravação e exclusão pedem confirmação.
+A interface do cliente apresenta a programação e permite reservar um assento sem pagamento. As abas Início, Comprar e Perfil ficam na barra inferior. O Perfil exibe os comprovantes guardados no navegador. A área de gestão fica disponível pelo Perfil e pede confirmação para cadastrar, editar e excluir registros. [CineMel](https://cinemel-devops.onrender.com/) · [Área de gestão](https://cinemel-devops.onrender.com/gestao.html#assentos)
 
 | Recurso | Rota | O que representa |
 |---|---|---|
@@ -10,8 +10,9 @@ A [interface web do CineMel](https://cinemel-devops.onrender.com/) permite consu
 | Salas | `/salas` | Sala e dimensões de sua grade de assentos |
 | Assentos | `/assentos` | Fileira, número e tipo de assento em uma sala |
 | Sessões | `/sessoes` | Exibição de um filme em uma sala, com horário, formato, áudio e preço |
+| Reservas | `/reservas` | Reserva de um assento em uma sessão e geração do código do comprovante |
 
-As rotas permitem cadastrar, listar, consultar por ID, atualizar e excluir. Uma sessão só é cadastrada quando o filme e a sala informados existem.
+As rotas de filmes, salas, assentos e sessões permitem cadastrar, listar, consultar por ID, atualizar e excluir. Uma sessão só é cadastrada quando o filme e a sala informados existem. O cliente usa `GET /reservas/disponibilidade/{sessaoId}` para ver os lugares e `POST /reservas` para confirmar uma reserva.
 
 ## Requisitos funcionais
 
@@ -21,6 +22,7 @@ As rotas permitem cadastrar, listar, consultar por ID, atualizar e excluir. Uma 
 | RF02 | Cadastrar, listar, consultar por ID, atualizar e excluir salas. |
 | RF03 | Cadastrar, listar, consultar por ID, atualizar e excluir assentos vinculados a salas. |
 | RF04 | Cadastrar, listar, consultar por ID, atualizar e excluir sessões vinculadas a filmes e salas. |
+| RF05 | Consultar os horários e assentos de uma sessão, confirmar uma reserva sem pagamento e receber um comprovante. |
 
 ## Requisitos não funcionais
 
@@ -42,6 +44,8 @@ As rotas permitem cadastrar, listar, consultar por ID, atualizar e excluir. Uma 
 | RN04 | O estado do filme pode ser `EM_CARTAZ` ou `EM_BREVE`. |
 | RN05 | O formato da sessão pode ser `DOIS_D`, `TRES_D` ou `IMAX`. O áudio pode ser `DUBLADO` ou `LEGENDADO`. |
 | RN06 | O tipo do assento pode ser `NORMAL`, `PCD`, `OBESO` ou `ACOMPANHANTE`. |
+| RN07 | Cada assento pertence à sala da sessão e só pode ser reservado uma vez por sessão. Uma tentativa concorrente de reservar o mesmo lugar retorna HTTP 409. |
+| RN08 | A área de gestão bloqueia a edição e a exclusão de uma sessão ou assento vinculados a reservas. |
 
 ### Reenvio de requisições
 
@@ -55,8 +59,9 @@ Repetir um `GET` apenas consulta os dados. Repetir um `POST` válido para filmes
 | RD02 | Sala | Nome (até 50 caracteres) | Total de fileiras e quantidade de assentos por fileira, ambos inteiros |
 | RD03 | Assento | Sala existente, fileira (até 2 caracteres), número inteiro e tipo | A combinação de sala, fileira e número é única |
 | RD04 | Sessão | Filme e sala existentes, data e hora, formato, áudio e preço base | O preço admite até 10 dígitos, sendo 2 decimais |
+| RD05 | Reserva | Sessão existente e assento da sala correspondente | Código UUID gerado pelo sistema e combinação única de sessão e assento |
 
-Cada registro tem um ID numérico gerado pelo banco. Uma sala pode ter vários assentos e sessões, e um filme pode aparecer em várias sessões.
+Filmes, salas, assentos e sessões têm IDs numéricos. Uma sala pode ter vários assentos e sessões, e um filme pode aparecer em várias sessões. A reserva usa um código UUID e dispensa nome, conta e dados de pagamento.
 
 ## Executar a API
 

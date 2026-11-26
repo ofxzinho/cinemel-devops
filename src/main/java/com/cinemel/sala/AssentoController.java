@@ -4,11 +4,13 @@ import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 
+import com.cinemel.reserva.ReservaRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,10 +35,13 @@ public class AssentoController {
 
 	private final AssentoRepository assentoRepository;
 	private final SalaRepository salaRepository;
+	private final ReservaRepository reservaRepository;
 
-	public AssentoController(AssentoRepository assentoRepository, SalaRepository salaRepository) {
+	public AssentoController(AssentoRepository assentoRepository, SalaRepository salaRepository,
+			ReservaRepository reservaRepository) {
 		this.assentoRepository = assentoRepository;
 		this.salaRepository = salaRepository;
+		this.reservaRepository = reservaRepository;
 	}
 
 	// Cria um novo assento e retorna a localização do recurso criado.
@@ -85,13 +90,17 @@ public class AssentoController {
 	// Atualiza os dados de um assento existente.
 	@Operation(summary = "Atualizar assento")
 	@PutMapping("/{id}")
+	@Transactional
 	public ResponseEntity<Assento> atualizar(@PathVariable Long id, @RequestBody AssentoRequest request) {
-		return assentoRepository.findById(id)
+		return assentoRepository.buscarParaAlteracao(id)
 				.map(assento -> atualizarAssento(assento, request))
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	private ResponseEntity<Assento> atualizarAssento(Assento assento, AssentoRequest request) {
+		if (reservaRepository.existsByAssentoId(assento.getId())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
 		return salaRepository.findById(request.salaId())
 				.map(sala -> {
 					assento.setSala(sala);
@@ -126,9 +135,13 @@ public class AssentoController {
 	// Remove um assento existente.
 	@Operation(summary = "Excluir assento")
 	@DeleteMapping("/{id}")
+	@Transactional
 	public ResponseEntity<Void> excluir(@PathVariable Long id) {
-		if (!assentoRepository.existsById(id)) {
+		if (assentoRepository.buscarParaAlteracao(id).isEmpty()) {
 			return ResponseEntity.notFound().build();
+		}
+		if (reservaRepository.existsByAssentoId(id)) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
 
 		assentoRepository.deleteById(id);
