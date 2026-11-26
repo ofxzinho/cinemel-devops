@@ -17,10 +17,9 @@ Use Java 17 e tenha um banco PostgreSQL chamado `cinemel` disponível. Configure
 
 No Windows, execute `.\mvnw.cmd spring-boot:run`. No Linux ou macOS, execute `./mvnw spring-boot:run`. Abra o [Swagger](http://localhost:8080/docs) para consultar os esquemas e experimentar as operações.
 
-## Testes e apresentação
+## Testes e integração contínua
 
 - [Cenários de testes e comandos para a demonstração](docs/cenarios-de-testes.md)
-- [Material da apresentação de 4 de dezembro de 2026](docs/apresentacao.md)
 - [Workflow de integração contínua](.github/workflows/ci.yml)
 
 ## API hospedada
