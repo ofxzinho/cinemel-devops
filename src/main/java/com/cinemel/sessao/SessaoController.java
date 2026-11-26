@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -43,7 +45,15 @@ public class SessaoController {
 	}
 
 	// Cria uma nova sessão e retorna a localização do recurso criado.
-	@Operation(summary = "Cadastrar sessão", description = "Use os IDs de um filme e de uma sala cadastrados. Uma referência inexistente retorna HTTP 404.")
+	@Operation(summary = "Cadastrar sessão", description = """
+			Consulte [GET /filmes](../filmes) e [GET /salas](../salas).
+			Copie o campo `id` do filme para `filmeId` e o da sala para `salaId`.
+			Use uma data e hora futuras para a sessão aparecer na programação do site.
+			""", responses = {
+			@ApiResponse(responseCode = "201", description = "Sessão cadastrada"),
+			@ApiResponse(responseCode = "404", description = "Filme ou sala não encontrado. Confira filmeId e salaId.",
+					content = @Content)
+	})
 	@PostMapping
 	public ResponseEntity<Sessao> criar(@RequestBody SessaoRequest request) {
 		return filmeRepository.findById(request.filmeId())
@@ -75,6 +85,8 @@ public class SessaoController {
 
 	// Busca uma sessão pelo identificador.
 	@Operation(summary = "Consultar sessão por ID")
+	@ApiResponse(responseCode = "200", description = "Sessão encontrada")
+	@ApiResponse(responseCode = "404", description = "Sessão não encontrada", content = @Content)
 	@GetMapping("/{id}")
 	public ResponseEntity<Sessao> buscarPorId(@PathVariable Long id) {
 		return sessaoRepository.findById(id)
@@ -84,6 +96,9 @@ public class SessaoController {
 
 	// Atualiza os dados de uma sessão existente.
 	@Operation(summary = "Atualizar sessão")
+	@ApiResponse(responseCode = "200", description = "Sessão atualizada")
+	@ApiResponse(responseCode = "404", description = "Sessão, filme ou sala não encontrado", content = @Content)
+	@ApiResponse(responseCode = "409", description = "Sessão tem reservas", content = @Content)
 	@PutMapping("/{id}")
 	@Transactional
 	public ResponseEntity<Sessao> atualizar(@PathVariable Long id, @RequestBody SessaoRequest request) {
@@ -112,6 +127,9 @@ public class SessaoController {
 
 	// Remove uma sessão existente.
 	@Operation(summary = "Excluir sessão")
+	@ApiResponse(responseCode = "204", description = "Sessão excluída", content = @Content)
+	@ApiResponse(responseCode = "404", description = "Sessão não encontrada", content = @Content)
+	@ApiResponse(responseCode = "409", description = "Sessão tem reservas", content = @Content)
 	@DeleteMapping("/{id}")
 	@Transactional
 	public ResponseEntity<Void> excluir(@PathVariable Long id) {

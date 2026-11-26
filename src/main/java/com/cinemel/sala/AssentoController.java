@@ -45,7 +45,9 @@ public class AssentoController {
 	}
 
 	// Cria um novo assento e retorna a localização do recurso criado.
-	@Operation(summary = "Cadastrar assento", responses = {
+	@Operation(summary = "Cadastrar assento",
+			description = "Abra [GET /salas](../salas), encontre a sala pelo nome e copie o campo `id` para `salaId`.",
+			responses = {
 			@ApiResponse(responseCode = "201", description = "Assento cadastrado"),
 			@ApiResponse(responseCode = "404", description = "Sala inexistente", content = @Content),
 			@ApiResponse(responseCode = "409", description = "Já existe um assento nessa sala, fileira e número",
