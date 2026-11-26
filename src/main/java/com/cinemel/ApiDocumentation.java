@@ -25,24 +25,7 @@ class ApiDocumentation {
         return new OpenAPI().info(new Info()
                 .title("CineMel")
                 .version("1.0")
-                .description("""
-                        Interface interativa para gerenciar a programação de um cinema.
-
-                        ### Como achar os IDs
-
-                        1. Abra **Filmes → GET /filmes → Try it out → Execute**.
-                           No resultado, encontre o filme pelo título e copie o campo `id` para `filmeId`.
-                           Você também pode [abrir a lista de filmes](../filmes).
-                        2. Abra **Salas → GET /salas → Try it out → Execute**.
-                           Encontre a sala pelo nome e copie o campo `id` para `salaId`.
-                           Você também pode [abrir a lista de salas](../salas).
-                        3. Em **Sessões → POST /sessoes → Try it out**, substitua os IDs do exemplo e clique em **Execute**.
-                           Para cadastrar um assento, só precisa copiar o `id` da sala.
-
-                        Os números preenchidos no exemplo são ilustrativos. Use os IDs retornados pela API.
-                        Se a lista estiver vazia, cadastre o filme ou a sala antes de criar a sessão.
-                        Use dados fictícios no ambiente público de demonstração.
-                        """));
+                .description("API de filmes, salas, assentos, sessões e reservas do CineMel."));
     }
 
     @Bean

@@ -45,11 +45,7 @@ public class SessaoController {
 	}
 
 	// Cria uma nova sessão e retorna a localização do recurso criado.
-	@Operation(summary = "Cadastrar sessão", description = """
-			Consulte [GET /filmes](../filmes) e [GET /salas](../salas).
-			Copie o campo `id` do filme para `filmeId` e o da sala para `salaId`.
-			Use uma data e hora futuras para a sessão aparecer na programação do site.
-			""", responses = {
+	@Operation(summary = "Cadastrar sessão", responses = {
 			@ApiResponse(responseCode = "201", description = "Sessão cadastrada"),
 			@ApiResponse(responseCode = "404", description = "Filme ou sala não encontrado. Confira filmeId e salaId.",
 					content = @Content)
