@@ -2,7 +2,7 @@
 
 API REST para gerenciar o catálogo de filmes e a programação de um cinema. É uma aplicação Java com Spring Boot, Spring MVC, Spring Data JPA, PostgreSQL e Swagger.
 
-A interface do cliente apresenta a programação e permite reservar um assento sem pagamento. As abas Início, Comprar e Perfil ficam na barra inferior. O Perfil exibe os comprovantes guardados no navegador. A área de gestão fica disponível pelo Perfil e pede confirmação para cadastrar, editar e excluir registros. [CineMel](https://cinemel-devops.onrender.com/) · [Área de gestão](https://cinemel-devops.onrender.com/gestao.html#assentos)
+A interface do cliente apresenta a programação e permite reservar um assento sem pagamento. A barra inferior dá acesso a Início, Filmes, Comprar e Perfil. Em Filmes, é possível filtrar os títulos em cartaz ou em breve e consultar os detalhes e horários. O Perfil exibe os comprovantes guardados no navegador. A área de gestão fica disponível pelo Perfil e pede confirmação para cadastrar, editar e excluir registros. [CineMel](https://cinemel-devops.onrender.com/) · [Área de gestão](https://cinemel-devops.onrender.com/gestao.html#assentos)
 
 | Recurso | Rota | O que representa |
 |---|---|---|

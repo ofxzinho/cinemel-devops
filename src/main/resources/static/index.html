@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#121117">
+    <meta name="theme-color" content="#080809">
     <title>CineMel | Cinema e reservas</title>
     <link rel="stylesheet" href="/cinemel-cliente.css">
     <script defer src="/cinemel-cliente.js"></script>
@@ -11,26 +11,62 @@
 <body>
     <header class="masthead frame">
         <a class="logo" href="#inicio">Cine<span>Mel</span></a>
-        <span>Programação do cinema</span>
+        <a class="header-link" href="#filmes">Em cartaz</a>
     </header>
     <main class="frame">
         <section id="inicio" aria-labelledby="home-title">
-            <h1 id="home-title" class="sr-only">Em cartaz</h1>
+            <h1 id="home-title" class="home-title">Escolha seu próximo filme</h1>
             <article class="feature">
                 <img id="feature-image" src="/os-seis-sem-futuro.png" alt="Pôster do filme Os Seis Sem Futuro" fetchpriority="high">
                 <div class="feature-copy">
                     <p class="feature-meta" id="feature-year">Em cartaz · 2026</p>
                     <h2 id="feature-title">Os Seis Sem Futuro</h2>
                     <p class="tagline" id="feature-tagline">O futuro era promissor. Até eles se conhecerem.</p>
-                    <p id="feature-genre">Gênero: comédia, tragédia e desemprego.</p>
-                    <p id="feature-rating"><strong>IMDb: 9,8/10</strong> — Avaliado pelos próprios protagonistas.</p>
-                    <button class="primary" id="feature-book" type="button">Ver sessões</button>
+                    <div class="feature-actions">
+                        <button class="primary" id="feature-book" type="button">Ver sessões</button>
+                        <button class="secondary" id="feature-details" type="button">Sobre o filme</button>
+                    </div>
                 </div>
             </article>
-            <section class="catalogue" aria-labelledby="catalogue-title">
-                <h2 id="catalogue-title">Programação</h2>
-                <p id="catalogue-status" role="status"></p>
-                <ul id="catalogue"></ul>
+            <section class="catalogue" aria-labelledby="showtimes-title">
+                <header class="section-line">
+                    <h2 id="showtimes-title">Próximas sessões</h2>
+                    <a href="#filmes">Todos os filmes</a>
+                </header>
+                <p id="home-status" role="status">Carregando sessões…</p>
+                <ul id="home-showtimes" class="showtimes"></ul>
+            </section>
+        </section>
+
+        <section id="filmes" hidden aria-labelledby="catalogue-title">
+            <div class="page-title">
+                <h1 id="catalogue-title">Filmes</h1>
+                <p>Veja o que está em cartaz e o que vem por aí.</p>
+            </div>
+            <div class="filters" aria-label="Filtrar por situação">
+                <button type="button" data-filter="todos" aria-pressed="true">Todos</button>
+                <button type="button" data-filter="EM_CARTAZ" aria-pressed="false">Em cartaz</button>
+                <button type="button" data-filter="EM_BREVE" aria-pressed="false">Em breve</button>
+            </div>
+            <p id="catalogue-status" role="status">Carregando filmes…</p>
+            <ul id="catalogue"></ul>
+        </section>
+
+        <section id="detalhes" hidden aria-labelledby="film-title">
+            <a class="back-link" href="#filmes">‹ Todos os filmes</a>
+            <article class="film-detail">
+                <img id="film-image" alt="">
+                <div class="film-copy">
+                    <h1 id="film-title"></h1>
+                    <p class="film-meta" id="film-meta"></p>
+                    <p id="film-description"></p>
+                    <p id="film-rating"></p>
+                </div>
+            </article>
+            <section class="catalogue" aria-labelledby="film-showtimes-title">
+                <h2 id="film-showtimes-title">Sessões disponíveis</h2>
+                <p id="film-status" role="status"></p>
+                <ul id="film-showtimes" class="showtimes"></ul>
             </section>
         </section>
 
@@ -66,13 +102,14 @@
                 <p id="receipts-status"></p>
                 <ul id="receipts"></ul>
             </div>
-            <a class="secondary management" href="/gestao.html#assentos">Abrir gestão do cinema</a>
+            <a class="secondary management" href="/gestao.html#assentos">Gestão do cinema <span aria-hidden="true">›</span></a>
         </section>
     </main>
 
     <nav aria-label="Navegação principal">
         <div class="nav-inner">
             <a href="#inicio"><span class="nav-icon" aria-hidden="true">⌂</span>Início</a>
+            <a href="#filmes"><span class="nav-icon" aria-hidden="true">▣</span>Filmes</a>
             <a href="#comprar"><span class="nav-icon" aria-hidden="true">▤</span>Comprar</a>
             <a href="#perfil"><span class="nav-icon" aria-hidden="true">◎</span>Perfil</a>
         </div>

@@ -11,8 +11,13 @@ const storageKey = "cinemel-reservas";
 const dateFormat = new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short", timeStyle: "short", timeZone: "UTC"
 });
+const cinemaClock = new Intl.DateTimeFormat("sv-SE", {
+    dateStyle: "short", timeStyle: "medium", timeZone: "America/Sao_Paulo"
+});
 let movies = [];
 let sessions = [];
+let catalogueLoaded = false;
+let filter = "todos";
 let activeSeat;
 let mapVersion = 0;
 let submitting = false;
@@ -40,12 +45,16 @@ function seatName(seat) {
 
 function showPage() {
     const requested = location.hash.slice(1);
-    const active = ["inicio", "comprar", "perfil"].includes(requested) ? requested : "inicio";
-    for (const id of ["inicio", "comprar", "perfil"]) byId(id).hidden = id !== active;
+    const filmId = /^filme\/(\d+)$/.exec(requested)?.[1];
+    const pages = ["inicio", "filmes", "detalhes", "comprar", "perfil"];
+    const active = filmId ? "detalhes" : pages.includes(requested) && requested !== "detalhes" ? requested : "inicio";
+    for (const id of pages) byId(id).hidden = id !== active;
+    const tab = active === "detalhes" ? "filmes" : active;
     for (const link of document.querySelectorAll("nav a")) {
-        if (link.hash === "#" + active) link.setAttribute("aria-current", "page");
+        if (link.hash === "#" + tab) link.setAttribute("aria-current", "page");
         else link.removeAttribute("aria-current");
     }
+    if (active === "detalhes") renderFilm(Number(filmId));
     if (active === "comprar") refreshSeats();
     if (active === "perfil") renderReceipts();
 }
@@ -58,9 +67,9 @@ function setOptions(select, items, placeholder, getLabel, preferred) {
     select.disabled = !items.length;
 }
 
-function chooseMovie(id) {
+function chooseMovie(id, sessionId) {
     if (id) movieSelect.value = id;
-    loadSessionsForMovie();
+    loadSessionsForMovie(sessionId);
     location.hash = "comprar";
 }
 
@@ -77,44 +86,88 @@ function allowedPoster(url) {
 function renderCatalogue() {
     const status = byId("catalogue-status");
     const list = byId("catalogue");
-    const others = movies.filter(movie => movie.titulo !== featuredTitle);
-    const featured = movies.find(movie => movie.titulo === featuredTitle);
+    const visible = movies.filter(movie => filter === "todos" || movie.status === filter);
     list.replaceChildren();
-    if (featured) byId("feature-book").onclick = () => chooseMovie(featured.id);
-    status.textContent = movies.length ? "" : "Nenhum filme cadastrado no momento.";
-    document.querySelector(".catalogue").hidden = Boolean(featured) && !others.length;
+    status.textContent = visible.length ? "" : "Nenhum filme nesta categoria.";
 
-    for (const movie of others) {
+    for (const movie of visible) {
         const row = document.createElement("li");
         row.className = "movie-card";
-        const poster = allowedPoster(movie.posterUrl);
+        const link = document.createElement("a");
+        link.href = "#filme/" + movie.id;
+        const poster = posterFor(movie);
         if (poster) {
             const image = document.createElement("img");
             image.src = poster;
             image.alt = "";
             image.loading = "lazy";
             image.addEventListener("error", () => image.remove(), { once: true });
-            row.append(image);
+            link.append(image);
         }
-        const button = document.createElement("button");
+        const caption = document.createElement("div");
         const title = document.createElement("span");
         const state = document.createElement("small");
         title.textContent = movie.titulo;
-        state.textContent = sessions.some(session => session.filme?.id === movie.id)
-            ? "Ver sessões" : movie.status === "EM_BREVE" ? "Em breve" : "Sem sessões";
+        state.textContent = movie.status === "EM_BREVE" ? "Em breve" : "Em cartaz";
+        caption.append(title, state);
+        link.append(caption);
+        row.append(link);
+        list.append(row);
+    }
+}
+
+function posterFor(movie) {
+    return movie.titulo === featuredTitle ? "/os-seis-sem-futuro.png" : allowedPoster(movie.posterUrl);
+}
+
+function renderFilm(id) {
+    const movie = movies.find(item => item.id === id);
+    const image = byId("film-image");
+    const title = byId("film-title");
+    const poster = movie && posterFor(movie);
+    image.hidden = !poster;
+    if (poster) image.src = poster;
+    title.textContent = movie?.titulo || (catalogueLoaded ? "Filme indisponível" : "Carregando filme…");
+    const featured = movie?.titulo === featuredTitle;
+    byId("film-meta").textContent = movie ? [
+        movie.status === "EM_BREVE" ? "Em breve" : "Em cartaz",
+        featured ? "2026" : null,
+        movie.duracaoMinutos ? movie.duracaoMinutos + " min" : null,
+        movie.classificacao ? "Classificação " + movie.classificacao : null
+    ].filter(Boolean).join(" · ") : "";
+    byId("film-description").textContent = featured
+        ? "O futuro era promissor. Até eles se conhecerem. Gênero: comédia, tragédia e desemprego."
+        : movie?.sinopse || "";
+    byId("film-rating").textContent = featured
+        ? "IMDb: 9,8/10 — Avaliado pelos próprios protagonistas." : "";
+    renderShowtimes("film-showtimes", "film-status", sessions.filter(item => item.filme?.id === id), false);
+}
+
+function renderShowtimes(listId, statusId, entries, showFilm) {
+    const list = byId(listId);
+    list.replaceChildren();
+    byId(statusId).textContent = entries.length ? "" : "Nenhuma sessão cadastrada.";
+    for (const session of entries) {
+        const row = document.createElement("li");
+        const button = document.createElement("button");
+        const time = document.createElement("strong");
+        const subtitle = document.createElement("span");
+        time.textContent = dateForDisplay(session.dataHora);
+        subtitle.textContent = (showFilm ? session.filme.titulo + " · " : "") + session.sala.nome;
         button.type = "button";
-        button.append(title, state);
-        button.onclick = () => chooseMovie(movie.id);
+        button.append(time, subtitle);
+        button.onclick = () => chooseMovie(session.filme.id, session.id);
         row.append(button);
         list.append(row);
     }
 }
 
-function loadSessionsForMovie() {
+function loadSessionsForMovie(preferredSession) {
     const id = Number(movieSelect.value);
     const options = sessions.filter(session => session.filme?.id === id);
     setOptions(sessionSelect, options, "Escolha uma sessão",
-        session => dateForDisplay(session.dataHora) + " · " + session.sala?.nome, sessionSelect.value);
+        session => dateForDisplay(session.dataHora) + " · " + session.sala?.nome,
+        preferredSession || sessionSelect.value);
     refreshSeats();
 }
 
@@ -256,19 +309,43 @@ byId("open-profile").onclick = () => {
     location.hash = "perfil";
 };
 byId("feature-book").onclick = () => chooseMovie();
-movieSelect.onchange = loadSessionsForMovie;
+byId("feature-details").onclick = () => { location.hash = "filmes"; };
+movieSelect.onchange = () => loadSessionsForMovie();
 sessionSelect.onchange = refreshSeats;
-window.addEventListener("hashchange", showPage);
+window.addEventListener("hashchange", () => {
+    showPage();
+    window.scrollTo(0, 0);
+});
+for (const button of document.querySelectorAll(".filters button")) {
+    button.onclick = () => {
+        filter = button.dataset.filter;
+        for (const option of document.querySelectorAll(".filters button")) {
+            option.setAttribute("aria-pressed", String(option === button));
+        }
+        if (catalogueLoaded) renderCatalogue();
+    };
+}
 
 async function loadCatalogue() {
     try {
         [movies, sessions] = await Promise.all([request("/filmes"), request("/sessoes")]);
+        catalogueLoaded = true;
+        const now = cinemaClock.format(new Date()).replace(" ", "T");
+        sessions = sessions.filter(session => session.dataHora > now);
+        sessions.sort((first, second) => first.dataHora.localeCompare(second.dataHora));
         const featured = movies.find(movie => movie.titulo === featuredTitle);
+        if (featured) {
+            byId("feature-book").onclick = () => chooseMovie(featured.id);
+            byId("feature-details").onclick = () => { location.hash = "filme/" + featured.id; };
+        }
         setOptions(movieSelect, movies, "Escolha um filme", movie => movie.titulo, featured?.id);
         renderCatalogue();
+        renderShowtimes("home-showtimes", "home-status", sessions.slice(0, 4), true);
         loadSessionsForMovie();
+        showPage();
     } catch {
         byId("catalogue-status").textContent = "Não foi possível carregar a programação. Atualize a página.";
+        byId("home-status").textContent = "Não foi possível carregar os horários.";
     }
 }
 setOptions(movieSelect, [], "Carregando filmes…", () => "");
