@@ -161,7 +161,7 @@ function renderFilm(id) {
         ? "O futuro era promissor. Até eles se conhecerem. Gênero: comédia, tragédia e desemprego."
         : movie?.sinopse || "";
     byId("film-rating").textContent = featured
-        ? "IMDb: 9,8/10 — Avaliado pelos próprios protagonistas." : "";
+        ? "IMDb: 6,7/10 — Avaliado pelos próprios protagonistas." : "";
     const showtimes = sessions.filter(item => item.filme?.id === id);
     const days = [...new Set(showtimes.map(session => session.dataHora.slice(0, 10)))];
     const filters = byId("film-days");
