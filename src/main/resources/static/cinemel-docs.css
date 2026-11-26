@@ -1,0 +1,82 @@
+:root {
+    color-scheme: light;
+    background: #edf0f6;
+}
+
+body {
+    margin: 0;
+}
+
+.swagger-ui .topbar {
+    display: none;
+}
+
+.swagger-ui .wrapper {
+    max-width: 1120px;
+    padding-inline: clamp(14px, 4vw, 32px);
+}
+
+.swagger-ui .information-container {
+    background: #24284c;
+    border-bottom: 5px solid #a6b6ff;
+    color: #fff;
+}
+
+.swagger-ui .info {
+    margin: 0;
+    padding-block: clamp(28px, 5vw, 62px);
+}
+
+.swagger-ui .info .title {
+    color: #fff;
+    font-family: Georgia, serif;
+    font-size: clamp(2.6rem, 7vw, 5rem);
+    font-weight: 500;
+    letter-spacing: -.045em;
+    line-height: 1.08;
+}
+
+.swagger-ui .info .title small {
+    background: #4d568b;
+    margin-inline-start: 10px;
+    vertical-align: middle;
+}
+
+.swagger-ui .info .description {
+    max-width: 62ch;
+}
+
+.swagger-ui .info .description p {
+    color: #f1f3ff;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.swagger-ui .info .description code {
+    background: #383e6b;
+    color: #fff;
+}
+
+.swagger-ui .scheme-container {
+    box-shadow: none;
+    border-bottom: 1px solid #cbd2e5;
+}
+
+.swagger-ui .opblock-tag {
+    color: #24284c;
+    border-bottom-color: #bcc4da;
+}
+
+.swagger-ui .opblock-summary {
+    flex-wrap: wrap;
+}
+
+.swagger-ui .btn.execute {
+    background: #384992;
+    border-color: #384992;
+}
+
+.swagger-ui :focus-visible {
+    outline: 3px solid #4c5cb2;
+    outline-offset: 3px;
+}

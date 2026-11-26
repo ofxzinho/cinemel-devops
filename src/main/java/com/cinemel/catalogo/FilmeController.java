@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -28,6 +29,7 @@ public class FilmeController {
 	}
 
 	// Cria um novo filme e retorna a localização do recurso criado.
+	@Operation(summary = "Cadastrar filme")
 	@PostMapping
 	public ResponseEntity<Filme> criar(@RequestBody Filme filme) {
 		Filme filmeSalvo = filmeRepository.save(filme);
@@ -41,12 +43,14 @@ public class FilmeController {
 	}
 
 	// Lista todos os filmes cadastrados.
+	@Operation(summary = "Listar filmes")
 	@GetMapping
 	public ResponseEntity<List<Filme>> listar() {
 		return ResponseEntity.ok(filmeRepository.findAll());
 	}
 
 	// Busca um filme pelo identificador.
+	@Operation(summary = "Consultar filme por ID")
 	@GetMapping("/{id}")
 	public ResponseEntity<Filme> buscarPorId(@PathVariable Long id) {
 		return filmeRepository.findById(id)
@@ -55,6 +59,7 @@ public class FilmeController {
 	}
 
 	// Atualiza os dados de um filme existente.
+	@Operation(summary = "Atualizar filme")
 	@PutMapping("/{id}")
 	public ResponseEntity<Filme> atualizar(@PathVariable Long id, @RequestBody Filme filmeAtualizado) {
 		return filmeRepository.findById(id)
@@ -72,6 +77,7 @@ public class FilmeController {
 	}
 
 	// Remove um filme existente.
+	@Operation(summary = "Excluir filme")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> excluir(@PathVariable Long id) {
 		if (!filmeRepository.existsById(id)) {

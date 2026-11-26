@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -28,6 +29,7 @@ public class SalaController {
 	}
 
 	// Cria uma nova sala e retorna a localização do recurso criado.
+	@Operation(summary = "Cadastrar sala")
 	@PostMapping
 	public ResponseEntity<Sala> criar(@RequestBody Sala sala) {
 		Sala salaSalva = salaRepository.save(sala);
@@ -41,12 +43,14 @@ public class SalaController {
 	}
 
 	// Lista todas as salas cadastradas.
+	@Operation(summary = "Listar salas")
 	@GetMapping
 	public ResponseEntity<List<Sala>> listar() {
 		return ResponseEntity.ok(salaRepository.findAll());
 	}
 
 	// Busca uma sala pelo identificador.
+	@Operation(summary = "Consultar sala por ID")
 	@GetMapping("/{id}")
 	public ResponseEntity<Sala> buscarPorId(@PathVariable Long id) {
 		return salaRepository.findById(id)
@@ -55,6 +59,7 @@ public class SalaController {
 	}
 
 	// Atualiza os dados de uma sala existente.
+	@Operation(summary = "Atualizar sala")
 	@PutMapping("/{id}")
 	public ResponseEntity<Sala> atualizar(@PathVariable Long id, @RequestBody Sala salaAtualizada) {
 		return salaRepository.findById(id)
@@ -68,6 +73,7 @@ public class SalaController {
 	}
 
 	// Remove uma sala existente.
+	@Operation(summary = "Excluir sala")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> excluir(@PathVariable Long id) {
 		if (!salaRepository.existsById(id)) {

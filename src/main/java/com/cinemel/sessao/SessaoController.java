@@ -19,11 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/sessoes")
-@Tag(name = "Sessoes", description = "Operações de cadastro de sessões")
+@Tag(name = "Sessões", description = "Operações de cadastro de sessões")
 public class SessaoController {
 
 	private final SessaoRepository sessaoRepository;
@@ -38,6 +39,7 @@ public class SessaoController {
 	}
 
 	// Cria uma nova sessão e retorna a localização do recurso criado.
+	@Operation(summary = "Cadastrar sessão", description = "Use os IDs de um filme e de uma sala cadastrados. Uma referência inexistente retorna HTTP 404.")
 	@PostMapping
 	public ResponseEntity<Sessao> criar(@RequestBody SessaoRequest request) {
 		return filmeRepository.findById(request.filmeId())
@@ -61,12 +63,14 @@ public class SessaoController {
 	}
 
 	// Lista todas as sessões cadastradas.
+	@Operation(summary = "Listar sessões")
 	@GetMapping
 	public ResponseEntity<List<Sessao>> listar() {
 		return ResponseEntity.ok(sessaoRepository.findAll());
 	}
 
 	// Busca uma sessão pelo identificador.
+	@Operation(summary = "Consultar sessão por ID")
 	@GetMapping("/{id}")
 	public ResponseEntity<Sessao> buscarPorId(@PathVariable Long id) {
 		return sessaoRepository.findById(id)
@@ -75,6 +79,7 @@ public class SessaoController {
 	}
 
 	// Atualiza os dados de uma sessão existente.
+	@Operation(summary = "Atualizar sessão")
 	@PutMapping("/{id}")
 	public ResponseEntity<Sessao> atualizar(@PathVariable Long id, @RequestBody SessaoRequest request) {
 		return sessaoRepository.findById(id)
@@ -98,6 +103,7 @@ public class SessaoController {
 	}
 
 	// Remove uma sessão existente.
+	@Operation(summary = "Excluir sessão")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> excluir(@PathVariable Long id) {
 		if (!sessaoRepository.existsById(id)) {

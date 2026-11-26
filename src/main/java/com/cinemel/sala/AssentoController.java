@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -30,6 +31,7 @@ public class AssentoController {
 	}
 
 	// Cria um novo assento e retorna a localização do recurso criado.
+	@Operation(summary = "Cadastrar assento")
 	@PostMapping
 	public ResponseEntity<Assento> criar(@RequestBody AssentoRequest request) {
 		return salaRepository.findById(request.salaId())
@@ -50,12 +52,14 @@ public class AssentoController {
 	}
 
 	// Lista todos os assentos cadastrados.
+	@Operation(summary = "Listar assentos")
 	@GetMapping
 	public ResponseEntity<List<Assento>> listar() {
 		return ResponseEntity.ok(assentoRepository.findAll());
 	}
 
 	// Busca um assento pelo identificador.
+	@Operation(summary = "Consultar assento por ID")
 	@GetMapping("/{id}")
 	public ResponseEntity<Assento> buscarPorId(@PathVariable Long id) {
 		return assentoRepository.findById(id)
@@ -64,6 +68,7 @@ public class AssentoController {
 	}
 
 	// Atualiza os dados de um assento existente.
+	@Operation(summary = "Atualizar assento")
 	@PutMapping("/{id}")
 	public ResponseEntity<Assento> atualizar(@PathVariable Long id, @RequestBody AssentoRequest request) {
 		return assentoRepository.findById(id)
@@ -84,6 +89,7 @@ public class AssentoController {
 	}
 
 	// Remove um assento existente.
+	@Operation(summary = "Excluir assento")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> excluir(@PathVariable Long id) {
 		if (!assentoRepository.existsById(id)) {
