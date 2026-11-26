@@ -36,3 +36,9 @@ Se o p95 aumentar antes de surgirem erros, o painel sinaliza a degradação. A e
 ## 5. Entrega
 
 O representante envia por e-mail a [documentação da solução](../README.md), os [cenários de testes](cenarios-de-testes.md), o [repositório](https://github.com/ofxzinho/cinemel-devops) e o material usado na apresentação. O corpo do e-mail deve trazer o nome **CineMel** e os nomes completos de todos os integrantes.
+
+## 6. Demonstração do CI/CD
+
+O [Blueprint do Render](../render.yaml) descreve uma API Docker e um PostgreSQL separado para a demonstração. Após vincular o Blueprint ao repositório, o Render acompanha a `main` e publica novos commits quando as verificações da CI passam. A verificação de saúde consulta `GET /filmes`, que também depende do banco.
+
+Para a apresentação, mostrem o mesmo commit na execução do GitHub Actions e no evento de deploy do Render. Abram `/docs` na URL do serviço e executem `GET /filmes` ou `GET /sessoes` para mostrar a resposta da API hospedada. Façam a primeira consulta antes da apresentação, pois o serviço gratuito pode dormir quando fica ocioso. O banco gratuito expira 30 dias após a criação. Usem apenas dados fictícios na demonstração, pois as rotas de cadastro e exclusão são públicas.

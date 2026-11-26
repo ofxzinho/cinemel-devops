@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: cinemel-devops
+    runtime: docker
+    region: virginia
+    plan: free
+    branch: main
+    dockerfilePath: ./dockerfile
+    autoDeployTrigger: checksPass
+    healthCheckPath: /filmes
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx256m
+      - key: CINEMEL_DB_HOST
+        fromDatabase:
+          name: cinemel-demo-db
+          property: host
+      - key: CINEMEL_DB_PORT
+        fromDatabase:
+          name: cinemel-demo-db
+          property: port
+      - key: CINEMEL_DB_NAME
+        fromDatabase:
+          name: cinemel-demo-db
+          property: database
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: cinemel-demo-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: cinemel-demo-db
+          property: password
+
+databases:
+  - name: cinemel-demo-db
+    region: virginia
+    plan: free
+    databaseName: cinemel
+    ipAllowList: []
