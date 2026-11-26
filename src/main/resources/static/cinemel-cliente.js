@@ -3,11 +3,15 @@ const movieSelect = byId("movie");
 const sessionSelect = byId("session");
 const confirmation = byId("confirmation");
 const receiptDialog = byId("receipt-dialog");
+const profileEditor = byId("profile-editor");
+const profileForm = byId("profile-form");
 const review = byId("review");
 const confirm = byId("confirm");
 const cancel = byId("cancel");
 const featuredTitle = "Os Seis Sem Futuro";
 const storageKey = "cinemel-reservas";
+const profileKey = "cinemel-perfil";
+const defaultProfile = { nome: "Josel", sobrenome: "Gabel", cinema: "CineMel", novidades: "nao" };
 const dateFormat = new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short", timeStyle: "short", timeZone: "UTC"
 });
@@ -71,7 +75,10 @@ function showPage() {
     }
     if (active === "detalhes") renderFilm(Number(filmId));
     if (active === "comprar") refreshSeats();
-    if (active === "perfil") renderReceipts();
+    if (active === "perfil") {
+        renderProfile();
+        renderReceipts();
+    }
 }
 
 function setOptions(select, items, placeholder, getLabel, preferred) {
@@ -275,6 +282,48 @@ function receipts() {
         return [];
     }
 }
+
+function readProfile() {
+    try {
+        return { ...defaultProfile, ...JSON.parse(localStorage.getItem(profileKey) || "{}") };
+    } catch {
+        return defaultProfile;
+    }
+}
+
+function renderProfile() {
+    const { nome, sobrenome } = readProfile();
+    byId("profile-name").textContent = [nome, sobrenome].filter(Boolean).join(" ");
+}
+
+byId("edit-profile").onclick = () => {
+    const values = readProfile();
+    for (const field of profileForm.querySelectorAll("[name]")) {
+        field.value = values[field.name] ?? "";
+    }
+    byId("profile-feedback").textContent = "";
+    byId("profile-error").textContent = "";
+    profileEditor.showModal();
+};
+byId("cancel-profile").onclick = () => profileEditor.close();
+profileForm.addEventListener("submit", event => {
+    event.preventDefault();
+    const values = Object.fromEntries([...new FormData(profileForm)]
+        .map(([key, value]) => [key, value.trim()]));
+    if (!values.nome || !values.sobrenome) {
+        byId("profile-error").textContent = "Preencha o nome e o sobrenome.";
+        return;
+    }
+    try {
+        localStorage.setItem(profileKey, JSON.stringify(values));
+    } catch {
+        byId("profile-error").textContent = "O navegador não permitiu salvar os dados.";
+        return;
+    }
+    renderProfile();
+    profileEditor.close();
+    byId("profile-feedback").textContent = "Dados salvos neste navegador.";
+});
 
 function receiptSummary(receipt) {
     return receipt.filme + " · " + dateForDisplay(receipt.dataHora)

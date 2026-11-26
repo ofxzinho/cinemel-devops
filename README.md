@@ -23,6 +23,7 @@ As rotas de filmes, salas, assentos e sessões permitem cadastrar, listar, consu
 | RF03 | Cadastrar, listar, consultar por ID, atualizar e excluir assentos vinculados a salas. |
 | RF04 | Cadastrar, listar, consultar por ID, atualizar e excluir sessões vinculadas a filmes e salas. |
 | RF05 | Consultar os horários e assentos de uma sessão, confirmar uma reserva sem pagamento e receber um comprovante. |
+| RF06 | Editar dados e preferências do perfil de demonstração no navegador. |
 
 ## Requisitos não funcionais
 
@@ -60,6 +61,7 @@ Repetir um `GET` apenas consulta os dados. Repetir um `POST` válido para filmes
 | RD03 | Assento | Sala existente, fileira (até 2 caracteres), número inteiro e tipo | A combinação de sala, fileira e número é única |
 | RD04 | Sessão | Filme e sala existentes, data e hora, formato, áudio e preço base | O preço admite até 10 dígitos, sendo 2 decimais |
 | RD05 | Reserva | Sessão existente e assento da sala correspondente | Código UUID gerado pelo sistema e combinação única de sessão e assento |
+| RD06 | Perfil local | Nome e sobrenome | Foto de demonstração, data de nascimento, sexo, telefones, endereço e preferências. As alterações ficam no navegador |
 
 Filmes, salas, assentos e sessões têm IDs numéricos. Uma sala pode ter vários assentos e sessões, e um filme pode aparecer em várias sessões. A reserva usa um código UUID e dispensa nome, conta e dados de pagamento.
 

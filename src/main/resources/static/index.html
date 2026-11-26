@@ -97,25 +97,40 @@
         <section id="perfil" hidden aria-labelledby="profile-title">
             <div class="page-title">
                 <h1 id="profile-title">Seu perfil</h1>
-                <p>Consulte suas sessões e tenha o código da reserva à mão.</p>
             </div>
-            <section class="panel reservations" aria-labelledby="reservations-title">
-                <h2 id="reservations-title">Minhas reservas</h2>
-                <p class="profile-context">Comprovantes salvos neste navegador.</p>
-                <div class="filters receipt-filters" aria-label="Filtrar reservas">
-                    <button type="button" data-receipts="proximas" aria-pressed="true">Próximas</button>
-                    <button type="button" data-receipts="historico" aria-pressed="false">Histórico</button>
+            <div class="profile-layout">
+                <aside class="profile-card" aria-label="Dados do perfil">
+                    <div class="profile-banner">
+                        <img src="/josel-gabel.png" alt="" width="96" height="96">
+                        <h2 id="profile-name">Josel Gabel</h2>
+                        <p>Perfil de demonstração</p>
+                    </div>
+                    <button type="button" class="profile-action" id="edit-profile">
+                        <span><strong>Meus dados</strong><small>Editar informações e preferências</small></span>
+                        <span aria-hidden="true">›</span>
+                    </button>
+                    <p id="profile-feedback" role="status"></p>
+                </aside>
+                <div>
+                    <section class="panel reservations" aria-labelledby="reservations-title">
+                        <h2 id="reservations-title">Minhas reservas</h2>
+                        <p class="profile-context">Comprovantes salvos neste navegador.</p>
+                        <div class="filters receipt-filters" aria-label="Filtrar reservas">
+                            <button type="button" data-receipts="proximas" aria-pressed="true">Próximas</button>
+                            <button type="button" data-receipts="historico" aria-pressed="false">Histórico</button>
+                        </div>
+                        <p id="receipts-status"></p>
+                        <ul id="receipts"></ul>
+                        <a class="secondary profile-empty-action" id="profile-book" href="#filmes" hidden>Ver filmes em cartaz</a>
+                        <p id="copy-status" role="status"></p>
+                    </section>
+                    <details class="panel reservation-help">
+                        <summary>Como funcionam as reservas?</summary>
+                        <p>Escolha uma sessão e confirme um lugar na aba Comprar. O CineMel gera um código de reserva e guarda o comprovante neste navegador. A reserva é concluída sem cobrança.</p>
+                    </details>
+                    <a class="secondary management" href="/gestao.html#assentos">Gestão do cinema <span aria-hidden="true">›</span></a>
                 </div>
-                <p id="receipts-status"></p>
-                <ul id="receipts"></ul>
-                <a class="secondary profile-empty-action" id="profile-book" href="#filmes" hidden>Ver filmes em cartaz</a>
-                <p id="copy-status" role="status"></p>
-            </section>
-            <details class="panel reservation-help">
-                <summary>Como funcionam as reservas?</summary>
-                <p>Escolha uma sessão e confirme um lugar na aba Comprar. O CineMel gera um código de reserva e guarda o comprovante neste navegador. A reserva é concluída sem cobrança.</p>
-            </details>
-            <a class="secondary management" href="/gestao.html#assentos">Gestão do cinema <span aria-hidden="true">›</span></a>
+            </div>
         </section>
     </main>
 
@@ -127,6 +142,69 @@
             <a href="#perfil"><span class="nav-icon" aria-hidden="true">◎</span>Perfil</a>
         </div>
     </nav>
+
+    <dialog id="profile-editor" aria-labelledby="profile-editor-title">
+        <form id="profile-form">
+            <header class="editor-heading">
+                <h2 id="profile-editor-title">Meus dados</h2>
+                <p>Os dados e as preferências são salvos neste navegador.</p>
+            </header>
+            <fieldset>
+                <legend>Informações pessoais</legend>
+                <div class="profile-fields">
+                    <label>Nome <input name="nome" autocomplete="given-name" maxlength="80" required></label>
+                    <label>Sobrenome <input name="sobrenome" autocomplete="family-name" maxlength="80" required></label>
+                    <label>Data de nascimento <input type="date" name="nascimento" autocomplete="bday"></label>
+                    <label>Sexo
+                        <select name="sexo">
+                            <option value="">Selecione</option>
+                            <option value="Feminino">Feminino</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Outro">Outro</option>
+                            <option value="Prefiro não informar">Prefiro não informar</option>
+                        </select>
+                    </label>
+                    <label>Telefone <input type="tel" name="telefone" maxlength="25"></label>
+                    <label>Celular <input type="tel" name="celular" autocomplete="tel" maxlength="25"></label>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Endereço</legend>
+                <div class="profile-fields">
+                    <label>CEP <input name="cep" autocomplete="postal-code" inputmode="numeric" maxlength="9"></label>
+                    <label>Endereço <input name="endereco" autocomplete="address-line1" maxlength="120"></label>
+                    <label>Número <input name="numero" maxlength="15"></label>
+                    <label>Complemento <input name="complemento" autocomplete="address-line2" maxlength="100"></label>
+                    <label>Bairro <input name="bairro" autocomplete="address-level3" maxlength="80"></label>
+                    <label>Cidade <input name="cidade" autocomplete="address-level2" maxlength="80"></label>
+                    <label>Estado <input name="estado" autocomplete="address-level1" maxlength="30"></label>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Preferências</legend>
+                <div class="profile-fields">
+                    <label>Cinema de preferência
+                        <select name="cinema">
+                            <option value="">Sem preferência</option>
+                            <option value="CineMel">CineMel</option>
+                        </select>
+                    </label>
+                    <label>Receber novidades por e-mail
+                        <select name="novidades">
+                            <option value="nao">Não</option>
+                            <option value="sim">Sim</option>
+                        </select>
+                    </label>
+                </div>
+                <p class="preference-note">O CineMel guarda essa preferência localmente. Nenhum e-mail é enviado.</p>
+            </fieldset>
+            <p class="profile-error" id="profile-error" role="alert"></p>
+            <div class="dialog-actions">
+                <button type="button" id="cancel-profile" class="secondary">Cancelar</button>
+                <button type="submit" class="primary">Salvar dados</button>
+            </div>
+        </form>
+    </dialog>
 
     <dialog id="confirmation" aria-labelledby="confirmation-title">
         <h2 id="confirmation-title">Confirmar reserva?</h2>
