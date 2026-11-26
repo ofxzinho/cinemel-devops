@@ -14,10 +14,16 @@ const dateFormat = new Intl.DateTimeFormat("pt-BR", {
 const cinemaClock = new Intl.DateTimeFormat("sv-SE", {
     dateStyle: "short", timeStyle: "medium", timeZone: "America/Sao_Paulo"
 });
+const shortDate = new Intl.DateTimeFormat("pt-BR", {
+    weekday: "short", day: "2-digit", month: "2-digit", timeZone: "UTC"
+});
+const showFormat = { DOIS_D: "2D", TRES_D: "3D", IMAX: "IMAX" };
+const showAudio = { DUBLADO: "Dublado", LEGENDADO: "Legendado" };
 let movies = [];
 let sessions = [];
 let catalogueLoaded = false;
 let filter = "todos";
+let receiptFilter = "proximas";
 let activeSeat;
 let mapVersion = 0;
 let submitting = false;
@@ -37,6 +43,15 @@ async function request(path, body) {
 
 function dateForDisplay(value) {
     return dateFormat.format(new Date(value + "Z"));
+}
+
+function cinemaNow() {
+    return cinemaClock.format(new Date()).replace(" ", "T");
+}
+
+function sessionInfo(session) {
+    return [session.sala?.nome, showFormat[session.formato], showAudio[session.audio]]
+        .filter(Boolean).join(" · ");
 }
 
 function seatName(seat) {
@@ -140,7 +155,26 @@ function renderFilm(id) {
         : movie?.sinopse || "";
     byId("film-rating").textContent = featured
         ? "IMDb: 9,8/10 — Avaliado pelos próprios protagonistas." : "";
-    renderShowtimes("film-showtimes", "film-status", sessions.filter(item => item.filme?.id === id), false);
+    const showtimes = sessions.filter(item => item.filme?.id === id);
+    const days = [...new Set(showtimes.map(session => session.dataHora.slice(0, 10)))];
+    const filters = byId("film-days");
+    filters.replaceChildren();
+    for (const day of days) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = shortDate.format(new Date(day + "T00:00:00Z"));
+        button.setAttribute("aria-pressed", String(day === days[0]));
+        button.onclick = () => {
+            for (const option of filters.children) {
+                option.setAttribute("aria-pressed", String(option === button));
+            }
+            renderShowtimes("film-showtimes", "film-status",
+                showtimes.filter(item => item.dataHora.startsWith(day)), false);
+        };
+        filters.append(button);
+    }
+    renderShowtimes("film-showtimes", "film-status",
+        showtimes.filter(item => item.dataHora.startsWith(days[0])), false);
 }
 
 function renderShowtimes(listId, statusId, entries, showFilm) {
@@ -153,7 +187,7 @@ function renderShowtimes(listId, statusId, entries, showFilm) {
         const time = document.createElement("strong");
         const subtitle = document.createElement("span");
         time.textContent = dateForDisplay(session.dataHora);
-        subtitle.textContent = (showFilm ? session.filme.titulo + " · " : "") + session.sala.nome;
+        subtitle.textContent = (showFilm ? session.filme.titulo + " · " : "") + sessionInfo(session);
         button.type = "button";
         button.append(time, subtitle);
         button.onclick = () => chooseMovie(session.filme.id, session.id);
@@ -182,6 +216,10 @@ function selectSeat(seat) {
 async function refreshSeats() {
     const version = ++mapVersion;
     const sessionId = sessionSelect.value;
+    const showtime = sessions.find(item => item.id === Number(sessionId));
+    const summary = byId("selected-session");
+    summary.textContent = showtime ? sessionInfo(showtime) : "";
+    summary.hidden = !showtime;
     const status = byId("booking-status");
     const seats = byId("seats");
     seats.replaceChildren();
@@ -245,17 +283,40 @@ function receiptSummary(receipt) {
 
 function renderReceipts() {
     const list = byId("receipts");
-    const saved = receipts();
+    const now = cinemaNow();
+    const upcoming = receiptFilter === "proximas";
+    const saved = receipts().filter(receipt => receipt?.dataHora && typeof receipt.codigo === "string"
+        && (upcoming ? receipt.dataHora > now : receipt.dataHora <= now));
+    saved.sort((first, second) => upcoming ? first.dataHora.localeCompare(second.dataHora)
+        : second.dataHora.localeCompare(first.dataHora));
     list.replaceChildren();
-    byId("receipts-status").textContent = saved.length ? "" : "Você ainda não fez uma reserva neste navegador.";
+    byId("copy-status").textContent = "";
+    byId("receipts-status").textContent = saved.length ? ""
+        : upcoming ? "Você ainda não tem reservas para as próximas sessões." : "Nenhuma reserva no histórico.";
+    byId("profile-book").hidden = !upcoming || saved.length > 0;
     for (const receipt of saved) {
         const row = document.createElement("li");
+        row.className = "receipt-card";
+        const title = document.createElement("h3");
         const info = document.createElement("p");
         const code = document.createElement("p");
-        info.textContent = receiptSummary(receipt);
+        const copy = document.createElement("button");
+        title.textContent = receipt.filme;
+        info.textContent = dateForDisplay(receipt.dataHora) + " · " + receipt.sala + " · Assento " + receipt.assento;
         code.className = "code";
         code.textContent = receipt.codigo;
-        row.append(info, code);
+        copy.type = "button";
+        copy.className = "secondary";
+        copy.textContent = "Copiar código";
+        copy.onclick = async () => {
+            try {
+                await navigator.clipboard.writeText(receipt.codigo);
+                byId("copy-status").textContent = "Código da reserva copiado.";
+            } catch {
+                byId("copy-status").textContent = "Não foi possível copiar. Selecione o código no comprovante.";
+            }
+        };
+        row.append(title, info, code, copy);
         list.append(row);
     }
 }
@@ -316,13 +377,22 @@ window.addEventListener("hashchange", () => {
     showPage();
     window.scrollTo(0, 0);
 });
-for (const button of document.querySelectorAll(".filters button")) {
+for (const button of document.querySelectorAll("[data-filter]")) {
     button.onclick = () => {
         filter = button.dataset.filter;
-        for (const option of document.querySelectorAll(".filters button")) {
+        for (const option of document.querySelectorAll("[data-filter]")) {
             option.setAttribute("aria-pressed", String(option === button));
         }
         if (catalogueLoaded) renderCatalogue();
+    };
+}
+for (const button of document.querySelectorAll("[data-receipts]")) {
+    button.onclick = () => {
+        receiptFilter = button.dataset.receipts;
+        for (const option of document.querySelectorAll("[data-receipts]")) {
+            option.setAttribute("aria-pressed", String(option === button));
+        }
+        renderReceipts();
     };
 }
 
@@ -330,8 +400,7 @@ async function loadCatalogue() {
     try {
         [movies, sessions] = await Promise.all([request("/filmes"), request("/sessoes")]);
         catalogueLoaded = true;
-        const now = cinemaClock.format(new Date()).replace(" ", "T");
-        sessions = sessions.filter(session => session.dataHora > now);
+        sessions = sessions.filter(session => session.dataHora > cinemaNow());
         sessions.sort((first, second) => first.dataHora.localeCompare(second.dataHora));
         const featured = movies.find(movie => movie.titulo === featuredTitle);
         if (featured) {

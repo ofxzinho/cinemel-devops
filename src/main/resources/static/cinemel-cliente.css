@@ -60,6 +60,8 @@ select + label { margin-top: 18px; }
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .filters button { font-size: .875rem; }
 .filters button[aria-pressed="true"] { background: #c91827; border-color: #c91827; }
+.session-days:empty { display: none; }
+.selected-session, .profile-context { color: var(--soft); font-size: .9rem; margin-top: .65rem; }
 .film-detail { border: 1px solid var(--line); background: var(--panel); border-radius: 14px; overflow: hidden; }
 .film-detail img { width: 100%; height: clamp(270px, 92vw, 420px); object-fit: cover; object-position: center 37%; display: block; }
 .film-copy { padding: clamp(16px, 4vw, 32px); }
@@ -85,6 +87,16 @@ select + label { margin-top: 18px; }
 .seat:disabled { text-decoration: line-through; }
 .management { margin-top: 1rem; justify-content: space-between; gap: 16px; }
 #receipts li + li { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 12px; }
+.receipt-filters { margin: 14px 0; }
+.receipt-card { display: grid; gap: 6px; }
+.receipt-card h3 { font-size: 1.02rem; }
+.receipt-card p:not(.code) { color: var(--soft); }
+.receipt-card button { justify-self: start; margin-top: 4px; }
+.profile-empty-action { margin-top: 12px; }
+.reservation-help { margin-top: 12px; }
+.reservation-help summary { cursor: pointer; font-weight: 700; }
+.reservation-help p { color: var(--soft); margin-top: 10px; }
+#copy-status:not(:empty) { margin-top: 12px; color: var(--soft); }
 .code { overflow-wrap: anywhere; color: #ff99a1; font-family: ui-monospace, monospace; }
 
 nav { position: fixed; z-index: 2; inset: auto 0 0; border-top: 1px solid var(--line); background: #101012; padding: 6px 12px max(6px, env(safe-area-inset-bottom)); }

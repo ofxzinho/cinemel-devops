@@ -65,6 +65,7 @@
             </article>
             <section class="catalogue" aria-labelledby="film-showtimes-title">
                 <h2 id="film-showtimes-title">Sessões disponíveis</h2>
+                <div class="filters session-days" id="film-days" aria-label="Filtrar sessões por dia"></div>
                 <p id="film-status" role="status"></p>
                 <ul id="film-showtimes" class="showtimes"></ul>
             </section>
@@ -81,6 +82,7 @@
                     <select id="movie"></select>
                     <label for="session">Sessão</label>
                     <select id="session"></select>
+                    <p id="selected-session" class="selected-session" hidden></p>
                 </div>
                 <div class="panel">
                     <h2>Assentos</h2>
@@ -95,13 +97,24 @@
         <section id="perfil" hidden aria-labelledby="profile-title">
             <div class="page-title">
                 <h1 id="profile-title">Seu perfil</h1>
-                <p>As reservas mostradas aqui foram feitas neste navegador.</p>
+                <p>Consulte suas sessões e tenha o código da reserva à mão.</p>
             </div>
-            <div class="panel">
-                <h2>Minhas reservas</h2>
+            <section class="panel reservations" aria-labelledby="reservations-title">
+                <h2 id="reservations-title">Minhas reservas</h2>
+                <p class="profile-context">Comprovantes salvos neste navegador.</p>
+                <div class="filters receipt-filters" aria-label="Filtrar reservas">
+                    <button type="button" data-receipts="proximas" aria-pressed="true">Próximas</button>
+                    <button type="button" data-receipts="historico" aria-pressed="false">Histórico</button>
+                </div>
                 <p id="receipts-status"></p>
                 <ul id="receipts"></ul>
-            </div>
+                <a class="secondary profile-empty-action" id="profile-book" href="#filmes" hidden>Ver filmes em cartaz</a>
+                <p id="copy-status" role="status"></p>
+            </section>
+            <details class="panel reservation-help">
+                <summary>Como funcionam as reservas?</summary>
+                <p>Escolha uma sessão e confirme um lugar na aba Comprar. O CineMel gera um código de reserva e guarda o comprovante neste navegador. A reserva é concluída sem cobrança.</p>
+            </details>
             <a class="secondary management" href="/gestao.html#assentos">Gestão do cinema <span aria-hidden="true">›</span></a>
         </section>
     </main>
