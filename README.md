@@ -22,3 +22,7 @@ No Windows, execute `.\mvnw.cmd spring-boot:run`. No Linux ou macOS, execute `./
 - [Cenários de testes e comandos para a demonstração](docs/cenarios-de-testes.md)
 - [Material da apresentação de 4 de dezembro de 2026](docs/apresentacao.md)
 - [Workflow de integração contínua](.github/workflows/ci.yml)
+
+## API hospedada
+
+Abra o [Swagger do CineMel](https://cinemel-devops.onrender.com/docs) para demonstrar a API. O Render acompanha a branch `main` e publica os commits após a CI passar. O serviço gratuito pode demorar para responder à primeira requisição após um período ocioso.
